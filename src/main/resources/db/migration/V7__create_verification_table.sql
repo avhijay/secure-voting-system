@@ -1,0 +1,16 @@
+CREATE TABLE verification(
+
+id BIGINT AUTO_INCREMENT PRIMARY KEY,
+vote_id BIGINT NOT NULL,
+user_id BIGINT NOT NULL,
+method VARCHAR(50) NOT NULL,
+status VARCHAR(20) NOT NULL,
+captured_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+file_location VARCHAR(255),
+CONSTRAINT fk_check_voter_id FOREIGN KEY(vote_id) REFERENCES votes(id),
+CONSTRAINT fk_check_user_id FOREIGN KEY(user_id) REFERENCES users(id),
+
+CONSTRAINT check_method CHECK(UPPER(method)IN ('FINGERPRINT','OTP','FACIAL DATA')),
+CONSTRAINT check_status CHECK(UPPER(status)IN ('SUCCESS','FAILURE'))
+
+);
