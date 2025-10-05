@@ -3,6 +3,7 @@ package com.votingSystem.secureVote.entity;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name ="votes")
@@ -28,12 +29,17 @@ public class Votes {
     @Column(name = "cast_at")
     private Timestamp voteCastAt;
 
+    @OneToMany(mappedBy = "vote", fetch = FetchType.LAZY)
+    private List<Verification>verifications;
+
     public Votes(){}
-    public Votes(Users users, Election election, Candidates candidates, Timestamp voteCastAt) {
+
+    public Votes(Users users, Election election, Candidates candidates, Timestamp voteCastAt, List<Verification> verifications) {
         this.users = users;
         this.election = election;
         this.candidates = candidates;
         this.voteCastAt = voteCastAt;
+        this.verifications = verifications;
     }
 
     public Long getId() {
@@ -74,6 +80,14 @@ public class Votes {
 
     public void setVoteCastAt(Timestamp voteCastAt) {
         this.voteCastAt = voteCastAt;
+    }
+
+    public List<Verification> getVerifications() {
+        return verifications;
+    }
+
+    public void setVerifications(List<Verification> verifications) {
+        this.verifications = verifications;
     }
 
     @Override

@@ -11,6 +11,7 @@ public class MediaEvidence {
     @Column(name = "id")
     private Long id;
 
+    @ManyToOne
     @JoinColumn(name = "verification_id")
     private Verification verification;
 

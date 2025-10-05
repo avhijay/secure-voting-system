@@ -7,7 +7,7 @@ import java.util.List;
 
 public interface AuditRepository extends JpaRepository<Audit,Long> {
 
-    Audit findTopByOrderIdDesc();
+    Audit findTopByOrderByIdDesc();
     List<Audit>findByUserIdOrderByCreatedAtDesc(Long userId);
     List<Audit>findByStatus(String status);
 }

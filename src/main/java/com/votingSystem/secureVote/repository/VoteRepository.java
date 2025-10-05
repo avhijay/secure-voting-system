@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface VoteRepository extends JpaRepository<Votes,Long> {
 
-    Votes findByVoterIdAndElectionId(Long voterId , Long electionId);
+    Votes findByUsersIdAndElectionId(Long voterId , Long electionId);
     List<Votes> findByElectionId(Long electionId);
-    Long countByCandidateId(Long candidateId);
+    Long countByCandidatesId(Long candidateId);
     Long countByElectionId(Long electionId);
 
 }

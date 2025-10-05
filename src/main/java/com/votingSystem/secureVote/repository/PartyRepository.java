@@ -12,4 +12,5 @@ public interface PartyRepository extends JpaRepository<Parties,Long> {
     Parties findBySymbol(String symbol);
 
     List<Parties>findAllByFoundedYearGreaterThan(int year );
+
 }

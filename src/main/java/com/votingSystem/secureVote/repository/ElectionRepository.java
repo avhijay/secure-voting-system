@@ -12,9 +12,9 @@ public interface ElectionRepository extends JpaRepository<Election,Long> {
 
     List<Election> findByStatus(String status);
 
-    List<Election> findByCreatedBy(Long userId);
+    List<Election> findByCreatedById(Long userId);
 
-    List<Election> findByStartDateBeforeAndEndDate(Timestamp now);
+    List<Election> findByStartDateBeforeAndEndDate(Timestamp start ,Timestamp end);
 
 
 

@@ -3,6 +3,7 @@ package com.votingSystem.secureVote.entity;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Entity
 @Table(name = "verification")
@@ -33,17 +34,21 @@ public class Verification {
     @Column(name = "file_location")
     private String fileLocation;
 
+    @OneToMany(mappedBy = "verification",fetch = FetchType.LAZY)
+    private List<MediaEvidence> mediaEvidenceList;
+
 
     public  Verification(){}
 
 
-    public Verification(Votes vote, Users user, String method, String status, Timestamp capturedAt, String fileLocation) {
+    public Verification(Votes vote, Users user, String method, String status, Timestamp capturedAt, String fileLocation, List<MediaEvidence> mediaEvidenceList) {
         this.vote = vote;
         this.user = user;
         this.method = method;
         this.status = status;
         this.capturedAt = capturedAt;
         this.fileLocation = fileLocation;
+        this.mediaEvidenceList = mediaEvidenceList;
     }
 
 
@@ -101,6 +106,14 @@ public class Verification {
 
     public void setFileLocation(String fileLocation) {
         this.fileLocation = fileLocation;
+    }
+
+    public List<MediaEvidence> getMediaEvidenceList() {
+        return mediaEvidenceList;
+    }
+
+    public void setMediaEvidenceList(List<MediaEvidence> mediaEvidenceList) {
+        this.mediaEvidenceList = mediaEvidenceList;
     }
 
     @Override
