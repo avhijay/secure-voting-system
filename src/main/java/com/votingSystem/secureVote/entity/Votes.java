@@ -29,8 +29,10 @@ public class Votes {
     @Column(name = "cast_at")
     private Timestamp voteCastAt;
 
-    @OneToMany(mappedBy = "vote", fetch = FetchType.LAZY)
+    /*@OneToMany(mappedBy = "vote", fetch = FetchType.LAZY)
     private List<Verification>verifications;
+
+     */
 
     public Votes(){}
 
@@ -39,7 +41,7 @@ public class Votes {
         this.election = election;
         this.candidates = candidates;
         this.voteCastAt = voteCastAt;
-        this.verifications = verifications;
+       // this.verifications = verifications;
     }
 
     public Long getId() {
@@ -82,13 +84,15 @@ public class Votes {
         this.voteCastAt = voteCastAt;
     }
 
-    public List<Verification> getVerifications() {
+ /*   public List<Verification> getVerifications() {
         return verifications;
     }
 
     public void setVerifications(List<Verification> verifications) {
         this.verifications = verifications;
     }
+
+  */
 
     @Override
     public String toString() {

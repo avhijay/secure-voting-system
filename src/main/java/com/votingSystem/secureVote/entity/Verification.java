@@ -34,8 +34,10 @@ public class Verification {
     @Column(name = "file_location")
     private String fileLocation;
 
-    @OneToMany(mappedBy = "verification",fetch = FetchType.LAZY)
+    /* @OneToMany(mappedBy = "verification",fetch = FetchType.LAZY)
     private List<MediaEvidence> mediaEvidenceList;
+
+     */
 
 
     public  Verification(){}
@@ -48,7 +50,7 @@ public class Verification {
         this.status = status;
         this.capturedAt = capturedAt;
         this.fileLocation = fileLocation;
-        this.mediaEvidenceList = mediaEvidenceList;
+       // this.mediaEvidenceList = mediaEvidenceList;
     }
 
 
@@ -108,13 +110,15 @@ public class Verification {
         this.fileLocation = fileLocation;
     }
 
-    public List<MediaEvidence> getMediaEvidenceList() {
+  /*  public List<MediaEvidence> getMediaEvidenceList() {
         return mediaEvidenceList;
     }
 
     public void setMediaEvidenceList(List<MediaEvidence> mediaEvidenceList) {
         this.mediaEvidenceList = mediaEvidenceList;
     }
+
+   */
 
     @Override
     public String toString() {

@@ -40,9 +40,11 @@ public class Users {
 
 @Column(name = "updated_at")
     private Timestamp updatedAt;
-
+/*
 @OneToMany(mappedBy = "user",fetch = FetchType.LAZY)
 private List<Verification> verifications;
+
+ */
 
 
 
@@ -58,7 +60,7 @@ public Users(){}
         this.clearanceLevel = clearanceLevel;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.verifications = verifications;
+       // this.verifications = verifications;
     }
 
     public Long getId() {
@@ -141,13 +143,15 @@ public Users(){}
         this.updatedAt = updatedAt;
     }
 
-    public List<Verification> getVerifications() {
+   /*public List<Verification> getVerifications() {
         return verifications;
     }
 
-    public void setVerifications(List<Verification> verifications) {
+   public void setVerifications(List<Verification> verifications) {
         this.verifications = verifications;
     }
+    */
+
 
     @Override
     public String toString() {
