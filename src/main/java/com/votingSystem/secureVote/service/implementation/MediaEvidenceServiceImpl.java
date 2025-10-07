@@ -1,23 +1,33 @@
 package com.votingSystem.secureVote.service.implementation;
 
 import com.votingSystem.secureVote.entity.MediaEvidence;
+import com.votingSystem.secureVote.repository.MediaEvidenceRepository;
 import com.votingSystem.secureVote.service.MediaEvidenceService;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
-
+@Service
 public class MediaEvidenceServiceImpl implements MediaEvidenceService {
+
+    private MediaEvidenceRepository mediaEvidenceRepository;
+
+    public MediaEvidenceServiceImpl (MediaEvidenceRepository mediaEvidenceRepository1){
+        this.mediaEvidenceRepository=mediaEvidenceRepository1;
+    }
+
+
     @Override
     public MediaEvidence addMediaEvidence(MediaEvidence mediaEvidence) {
-        return null;
+        return mediaEvidenceRepository.save(mediaEvidence);
     }
 
     @Override
     public List<MediaEvidence> getMediaByVerification(Long verificationId) {
-        return List.of();
+        return mediaEvidenceRepository.findByVerificationId(verificationId);
     }
 
     @Override
     public List<MediaEvidence> getMediaByType(String mediaType) {
-        return List.of();
+        return null;
     }
 }
