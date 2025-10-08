@@ -8,7 +8,7 @@ public interface AuditService {
 
     Audit logAction(Long userId, String action , String status, String reason);
     List<Audit> getAllAuditLogs();
-    List<Audit> getAuditByUser(Long userId);
+    List<Audit> getAuditByUser(Long id);
     Audit getLatestAuditEntry();
 
 

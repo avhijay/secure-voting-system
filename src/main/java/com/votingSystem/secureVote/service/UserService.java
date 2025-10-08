@@ -10,7 +10,7 @@ public interface UserService {
 
     List<Users> getAllUsers();
     Users getUserById(Long id);
-    Users getUserByUserId(String userId);
+    Users getUserByIdentityKey(String identityKey);
     List<Users> getUserByRole(String role);
     List<Users> getUserByStatus(String status);
     Users createUser(Users user);

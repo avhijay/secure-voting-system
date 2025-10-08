@@ -18,7 +18,7 @@ public class Users {
     private String name;
 
 @Column(name="user_id")
-    private String userId;
+    private String identityKey;
 
 @Column(name = "email")
     private String email;
@@ -50,9 +50,9 @@ private List<Verification> verifications;
 
 public Users(){}
 
-    public Users(String name, String userId, String email, String password, String role, String status, Integer clearanceLevel, Timestamp createdAt, Timestamp updatedAt, List<Verification> verifications) {
+    public Users(String name, String identityKey, String email, String password, String role, String status, Integer clearanceLevel, Timestamp createdAt, Timestamp updatedAt) {
         this.name = name;
-        userId = userId;
+        identityKey = identityKey;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -60,7 +60,6 @@ public Users(){}
         this.clearanceLevel = clearanceLevel;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-       // this.verifications = verifications;
     }
 
     public Long getId() {
@@ -79,12 +78,12 @@ public Users(){}
         this.name = name;
     }
 
-    public String getUserId() {
-        return userId;
+    public String getIdentityKey() {
+        return identityKey;
     }
 
-    public void setUserId(String userId) {
-        userId = userId;
+    public void setIdentityKey(String identityKey) {
+        identityKey = identityKey;
     }
 
     public String getEmail() {
@@ -158,7 +157,7 @@ public Users(){}
         return "Users{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", UserId='" + userId + '\'' +
+                ", IdentityKey='" + identityKey + '\'' +
                 ", email='" + email + '\'' +
                 ", password='" + password + '\'' +
                 ", role='" + role + '\'' +
