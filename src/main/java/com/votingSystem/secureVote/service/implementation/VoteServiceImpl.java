@@ -63,6 +63,7 @@ public class VoteServiceImpl implements VoteService {
     @Override
     public Long countVotesForCandidate(Long candidateId) {
         return voteRepository.countByCandidatesId(candidateId);
+        
     }
 
     @Override
