@@ -5,6 +5,7 @@ import com.votingSystem.secureVote.entity.Users;
 import com.votingSystem.secureVote.repository.AuditRepository;
 import com.votingSystem.secureVote.repository.UserRepository;
 import com.votingSystem.secureVote.service.AuditService;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,15 +57,14 @@ newAudit.setUser(theUser);
 newAudit.setAction(action);
 newAudit.setStatus(status);
 newAudit.setReason(reason);
-newAudit.setCreatedAt(Timestamp.valueOf(LocalDateTime.now()));
+Timestamp now = Timestamp.valueOf(LocalDateTime.now());
+newAudit.setCreatedAt(now);
 newAudit.setPrevHash(prevHash);
-String data = prevHash +"|"+ userId +"|"+ action +"|"+ status +"|"+ reason +"|"+Timestamp.valueOf(LocalDateTime.now());
+String data = prevHash +"|"+ userId +"|"+ action +"|"+ status +"|"+ reason +"|"+now;
 newAudit.setEntryHash(computeHash(data));
 return auditRepository.save(newAudit);
 
     }
-
-
 
      private  String computeHash(String input){
         try {
@@ -77,6 +77,33 @@ return auditRepository.save(newAudit);
 
          }
      }
+
+@Override
+     public boolean verifyAuditChaining(){
+        List<Audit> auditsList =auditRepository.findAll(Sort.by("id"));
+        String lastHash="GENESIS";
+        boolean chainValid= true;
+        for(Audit curr:auditsList){
+            String reHashed =computeHash(curr.getPrevHash() +"|"+ curr.getUser().getId() +"|"+curr.getAction() +"|"+ curr.getStatus() +"|"+ curr.getReason() +"|"+curr.getCreatedAt());
+if(!reHashed.equals(curr.getEntryHash())){
+    chainValid=false;
+    break;
+}
+if(!curr.getPrevHash().equals(lastHash)){
+    chainValid =false;
+    break;
+}
+lastHash =curr.getEntryHash();
+
+
+        }
+        return chainValid;
+
+
+
+     }
+
+
 
     @Override
     public List<Audit> getAllAuditLogs() {

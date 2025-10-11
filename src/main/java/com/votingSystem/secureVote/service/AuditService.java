@@ -10,6 +10,7 @@ public interface AuditService {
     List<Audit> getAllAuditLogs();
     List<Audit> getAuditByUser(Long id);
     Audit getLatestAuditEntry();
+    public boolean verifyAuditChaining();
 
 
 }
