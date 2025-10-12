@@ -3,6 +3,7 @@ package com.votingSystem.secureVote.service;
 import com.votingSystem.secureVote.entity.Audit;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface AuditService {
 
@@ -10,7 +11,7 @@ public interface AuditService {
     List<Audit> getAllAuditLogs();
     List<Audit> getAuditByUser(Long id);
     Audit getLatestAuditEntry();
-    public boolean verifyAuditChaining();
+     Optional<Long> verifyAuditChaining();
 
 
 }

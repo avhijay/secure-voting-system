@@ -5,6 +5,8 @@ import com.votingSystem.secureVote.entity.Users;
 import com.votingSystem.secureVote.repository.AuditRepository;
 import com.votingSystem.secureVote.repository.UserRepository;
 import com.votingSystem.secureVote.service.AuditService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,8 +18,13 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.HexFormat;
 import java.util.List;
+import java.util.Optional;
+
+
 @Service
 public class AuditServiceImpl implements AuditService {
+
+    private static final Logger log = LoggerFactory.getLogger(AuditServiceImpl.class);
 
     private AuditRepository auditRepository;
     private UserRepository userRepository;
@@ -79,25 +86,28 @@ return auditRepository.save(newAudit);
      }
 
 @Override
-     public boolean verifyAuditChaining(){
+     public Optional<Long> verifyAuditChaining(){
         List<Audit> auditsList =auditRepository.findAll(Sort.by("id"));
         String lastHash="GENESIS";
-        boolean chainValid= true;
+        //boolean chainValid= true;
         for(Audit curr:auditsList){
             String reHashed =computeHash(curr.getPrevHash() +"|"+ curr.getUser().getId() +"|"+curr.getAction() +"|"+ curr.getStatus() +"|"+ curr.getReason() +"|"+curr.getCreatedAt());
 if(!reHashed.equals(curr.getEntryHash())){
-    chainValid=false;
-    break;
+   // chainValid=false;
+    log.warn("chain broken at id{} (EntryHash)",curr.getId());
+    return  Optional.of(curr.getId());
 }
 if(!curr.getPrevHash().equals(lastHash)){
-    chainValid =false;
-    break;
+   // chainValid =false;
+    log.warn("chain broken at id{} (lastHash)",curr.getId());
+    return  Optional.of(curr.getId());
 }
 lastHash =curr.getEntryHash();
 
 
         }
-        return chainValid;
+        log.info("Audit chaining verified with success");
+        return Optional.empty();
 
 
 
