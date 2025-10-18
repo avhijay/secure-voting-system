@@ -4,6 +4,7 @@ import com.votingSystem.secureVote.entity.Candidates;
 import com.votingSystem.secureVote.entity.Election;
 import com.votingSystem.secureVote.entity.Users;
 import com.votingSystem.secureVote.entity.Votes;
+import com.votingSystem.secureVote.exception.ResourceNotFoundException;
 import com.votingSystem.secureVote.repository.CandidateRepository;
 import com.votingSystem.secureVote.repository.ElectionRepository;
 import com.votingSystem.secureVote.repository.UserRepository;
@@ -15,6 +16,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class VoteServiceImpl implements VoteService {
@@ -25,67 +28,96 @@ public class VoteServiceImpl implements VoteService {
     private UserRepository userRepository;
     private AuditService auditService;
 
-    public VoteServiceImpl(VoteRepository voteRepository1, CandidateRepository candidates1,ElectionRepository electionRepository1, UserRepository userRepository1 , AuditService auditService1){
-        this.voteRepository=voteRepository1;
-        candidateRepository=candidates1;
-        this.electionRepository=electionRepository1;
-        this.userRepository=userRepository1;
-        this.auditService=auditService1;
+    public VoteServiceImpl(VoteRepository voteRepository1, CandidateRepository candidates1, ElectionRepository electionRepository1, UserRepository userRepository1, AuditService auditService1) {
+        this.voteRepository = voteRepository1;
+        candidateRepository = candidates1;
+        this.electionRepository = electionRepository1;
+        this.userRepository = userRepository1;
+        this.auditService = auditService1;
     }
 
-@Transactional
+    @Transactional
     @Override
     public Votes castVote(Long voterId, Long electionId, Long candidateId) {
 
         Votes newVote = new Votes();
 
-        Candidates newCandidate ;
-        newCandidate= candidateRepository.findById(candidateId).orElseThrow(()-> new RuntimeException("Candidate id not found "+candidateId));
+        Candidates newCandidate;
+        newCandidate = candidateRepository.findById(candidateId).orElseThrow(() -> new RuntimeException("Candidate id not found " + candidateId));
 
 
-if(!newCandidate.getElection().getId().equals(electionId)){
-    auditService.logAction(voterId,"Cast_vote","Failure","wrong candidate selection (Mismatch with election id ) ");
-    throw new RuntimeException("Candidate not available for the current election: "+candidateId+"in election: "+electionId);
-}
-        if (!hasUserVoted(voterId,electionId)){
+        if (!newCandidate.getElection().getId().equals(electionId)) {
+            auditService.logAction(voterId, "Cast_vote", "Failure", "wrong candidate selection (Mismatch with election id ) ");
+            throw new RuntimeException("Candidate not available for the current election: " + candidateId + "in election: " + electionId);
+        }
+        if (!hasUserVoted(voterId, electionId)) {
             newVote.setCandidates(newCandidate);
 
-            Election newElection = electionRepository.findById(electionId).orElseThrow(()->new RuntimeException("Election not found : "+electionId));
+            Election newElection = electionRepository.findById(electionId).orElseThrow(() -> new RuntimeException("Election not found : " + electionId));
 
-            if (!newElection.getStatus().equalsIgnoreCase("ONGOING")){
-                auditService.logAction(voterId,"Cast_vote","Failure","Election not active :"+electionId);
-                throw new RuntimeException("Election is currently not active :"+electionId);
+            if (!newElection.getStatus().equalsIgnoreCase("ONGOING")) {
+                auditService.logAction(voterId, "Cast_vote", "Failure", "Election not active :" + electionId);
+                throw new RuntimeException("Election is currently not active :" + electionId);
             }
 
             newVote.setElection(newElection);
 
-            Users newUser  = userRepository.findById(voterId).orElseThrow(()->new RuntimeException("No voter found :"+ voterId));
+            Users newUser = userRepository.findById(voterId).orElseThrow(() -> new RuntimeException("No voter found :" + voterId));
 
             newVote.setUsers(newUser);
             newVote.setVoteCastAt(Timestamp.valueOf(LocalDateTime.now()));
-        }   else{
-            auditService.logAction(voterId,"Casting vote ","Failure","");
+        } else {
+            auditService.logAction(voterId, "Casting vote ", "Failure", "");
             throw new RuntimeException("User has already Voted");
         }
         Votes saved = voteRepository.save(newVote);
-auditService.logAction(voterId,"Casting vote","Sucess","Voting process by the user "); voteRepository.save(newVote);
-return  saved;
+        auditService.logAction(voterId, "Casting vote", "Sucess", "Voting process by the user ");
+        voteRepository.save(newVote);
+        return saved;
     }
 
     @Override
     public boolean hasUserVoted(Long voterId, Long electionId) {
-        return voteRepository.findByUsersIdAndElectionId(voterId,electionId)!=null;
+        return voteRepository.findByUsersIdAndElectionId(voterId, electionId) != null;
 
     }
 
     @Override
     public Long countVotesForCandidate(Long candidateId) {
         return voteRepository.countByCandidatesId(candidateId);
-        
+
     }
 
     @Override
     public Long countVotesForElection(Long electionId) {
         return voteRepository.countByElectionId(electionId);
     }
+
+    @Override
+    public List<Votes> returnAllVotesByElectionId(Long electionId) {
+        if (voteRepository.findByElectionId(electionId) == null) {
+            throw new ResourceNotFoundException("No votes found for the particular election id : " + electionId);
+        }
+        return voteRepository.findByElectionId(electionId);
+    }
+
+    @Override
+    public Votes getVoteByVoteId(Long voteId) {
+
+        return voteRepository.findById(voteId).orElseThrow(() -> new ResourceNotFoundException("No votes available by the id :" + voteId));
+    }
+
+    @Override
+    public Votes getElectionVotesByVoterId(Long electionId, Long voterId) {
+        return voteRepository.findByUsersIdAndElectionId(voterId,electionId).orElseThrow(()->new ResourceNotFoundException("No votes available by the voterId :" + voterId));
+    }
+
+    @Override
+    public Votes getByUserId(Long userId) {
+        Votes vote = voteRepository.findByUsersId(userId).orElseThrow(()->new ResourceNotFoundException("No votes found by id : "+userId ));
+        return vote;
+    }
 }
+
+
+

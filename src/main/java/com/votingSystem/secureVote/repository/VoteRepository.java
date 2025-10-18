@@ -4,13 +4,15 @@ import com.votingSystem.secureVote.entity.Votes;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface VoteRepository extends JpaRepository<Votes,Long> {
 
-    Votes findByUsersIdAndElectionId(Long voterId , Long electionId);
+   Optional< Votes> findByUsersIdAndElectionId(Long voterId , Long electionId);
     List<Votes> findByElectionId(Long electionId);
     Long countByCandidatesId(Long candidateId);
     Long countByElectionId(Long electionId);
+    Optional<Votes>findByUsersId(Long userId);
 
 }
 
