@@ -37,7 +37,7 @@ public class VoteController {
         data.setCandidateId(saved.getCandidates().getId());
         data.setCastAt(Timestamp.valueOf(LocalDateTime.now()).toString());
 
-        URI  location = URI.create("/api/votes/"+data.getVoteId());
+        URI  location = URI.create("/api/votes/cast"+data.getVoteId());
         return ResponseEntity.created(location).body(data);
     }
     @GetMapping("/election/{id}")
