@@ -16,7 +16,7 @@ public interface CandidateService {
     Candidates getCandidateById(Long id);
 
     List<Candidates> searchCandidateByName(String name);
-
+Candidates createCandidate(Candidates candidates);
 
 
 

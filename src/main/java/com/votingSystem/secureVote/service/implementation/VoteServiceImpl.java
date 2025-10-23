@@ -117,6 +117,11 @@ public class VoteServiceImpl implements VoteService {
         Votes vote = voteRepository.findByUsersId(userId).orElseThrow(()->new ResourceNotFoundException("No votes found by id : "+userId ));
         return vote;
     }
+
+    @Override
+    public Boolean hasTheUserVoted(Long electionId, Long userId) {
+        return null;
+    }
 }
 
 

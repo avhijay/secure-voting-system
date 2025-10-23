@@ -54,4 +54,11 @@ public class CandidateServiceImpl implements CandidateService {
         }
         return candidateRepository.findByNameContainingIgnoreCase(name);
     }
+
+    @Override
+    public Candidates createCandidate(Candidates candidates) {
+        return candidateRepository.save(candidates);
+    }
+
+
 }

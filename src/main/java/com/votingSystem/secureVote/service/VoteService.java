@@ -24,6 +24,9 @@ public interface VoteService {
 
     Votes getByUserId(Long userId);
 
+    public Boolean hasTheUserVoted(Long electionId, Long userId);
+
+
 
 
 

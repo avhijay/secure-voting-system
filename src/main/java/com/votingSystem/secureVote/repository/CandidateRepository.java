@@ -29,6 +29,14 @@ public interface CandidateRepository extends JpaRepository<Candidates,Long> {
           @Param("status") String status,
           @Param("partyId") Long partyId
   );
+//
+//@Query("SELECT cad FROM Candidates cad "+
+//"WHERE  cad.party.id = :partyId "+
+//        "AND (:partyName IS NULL OR cad.party.name = :partyName) "
+//        "AND cad.party.name =:partyName")
+//  List<Candidates> getCandidates
+
+
 
 
 
