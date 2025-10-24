@@ -39,7 +39,19 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public Candidates approveCandidate(Long candidateId, Long userId) {
-        return null;
+        Candidates candidates  = candidateRepository.findById(candidateId).orElseThrow(()->new ResourceNotFoundException("No candidate found with the id :"+candidateId));
+                    candidates.setApprovedBy(userId);
+                    candidates.setStatus("Approved");
+
+                return candidateRepository.save(candidates);
+    }
+
+    @Override
+    public Candidates rejectCandidate(Long candidateId) {
+        Candidates candidates  = candidateRepository.findById(candidateId).orElseThrow(()->new ResourceNotFoundException("No candidate found with the id :"+candidateId));
+        candidates.setStatus("Rejected");
+        System.out.println("Candidate rejected :"+candidateId);
+        return candidateRepository.save(candidates);
     }
 
     @Override

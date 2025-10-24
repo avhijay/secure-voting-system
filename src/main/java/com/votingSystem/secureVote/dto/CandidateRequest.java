@@ -6,23 +6,28 @@ public class CandidateRequest {
     private String name;
     private String partyName;
 private  String bio;
+private Long candidateId;
     private String status;
     private Long electionId;
     private long approvedBy;
     private Timestamp createdAt;
+    private Long userId;
 
     public CandidateRequest (){}
 
 
-    public CandidateRequest(String name, String partyName, String bio, String status, Long electionId, long approvedBy, Timestamp createdAt) {
+    public CandidateRequest(String name, String partyName, String bio, Long candidateId, String status, Long electionId, long approvedBy, Timestamp createdAt, Long userId) {
         this.name = name;
         this.partyName = partyName;
         this.bio = bio;
+        this.candidateId = candidateId;
         this.status = status;
         this.electionId = electionId;
         this.approvedBy = approvedBy;
         this.createdAt = createdAt;
+        this.userId = userId;
     }
+
 
     public String getName() {
         return name;
@@ -46,6 +51,14 @@ private  String bio;
 
     public void setBio(String bio) {
         this.bio = bio;
+    }
+
+    public Long getCandidateId() {
+        return candidateId;
+    }
+
+    public void setCandidateId(Long candidateId) {
+        this.candidateId = candidateId;
     }
 
     public String getStatus() {
@@ -78,5 +91,13 @@ private  String bio;
 
     public void setCreatedAt(Timestamp createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
     }
 }

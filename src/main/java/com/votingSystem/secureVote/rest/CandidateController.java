@@ -10,14 +10,12 @@ import com.votingSystem.secureVote.service.ElectionService;
 import com.votingSystem.secureVote.service.PartiesService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/candidates")
@@ -45,6 +43,7 @@ public class CandidateController {
         }else{
             candidate.setParty(null);
         }
+        candidate.setStatus("Pending");
         candidate.setCreatedAt(now);
         candidate.setUpdatedAt(now);
         candidate.setBio(request.getBio());
@@ -63,5 +62,66 @@ public class CandidateController {
         return ResponseEntity.created(location).body(response);
     }
 
+    @PatchMapping("/approve/{id}/by/{userId}")
+    public  ResponseEntity<CandidateResponse>approveCandidate(@PathVariable Long id,@PathVariable Long userId, @RequestParam Long ApprovedByUserId){
+         Candidates candidates = candidateService.approveCandidate(id,ApprovedByUserId);
+         CandidateResponse response = new CandidateResponse();
+         response.setName(candidates.getName());
+         response.setCreatedAt(candidates.getCreatedAt());
+         response.setUpdatedAt(candidates.getUpdatedAt());
+         response.setId(candidates.getId());
+         response.setApprovedBy(candidates.getApprovedBy());
+         response.setStatus(candidates.getStatus());
+         return  ResponseEntity.ok(response);
+
+
+    }
+
+    @PatchMapping("/reject/{id}/by/{userId}")
+    public  ResponseEntity<CandidateResponse>rejectCandidate(@PathVariable Long id,@PathVariable Long userId){
+        Candidates candidates = candidateService.rejectCandidate(id);
+        CandidateResponse response = new CandidateResponse();
+        response.setName(candidates.getName());
+        response.setCreatedAt(candidates.getCreatedAt());
+        response.setUpdatedAt(candidates.getUpdatedAt());
+        response.setId(candidates.getId());
+        response.setApprovedBy(candidates.getApprovedBy());
+        response.setStatus(candidates.getStatus());
+        return  ResponseEntity.ok(response);
+
+
+    }
+
+    @GetMapping("/election/{id}")
+    public  ResponseEntity<List< Candidates>>getByElection(@PathVariable Long id){
+        List<Candidates> candidates= candidateService.getCandidatesByElection(id);
+        return ResponseEntity.ok(candidates);
+    }
+
+    @GetMapping("/party/{id}")
+    public  ResponseEntity<List<Candidates>> getByParty(@PathVariable Long id){
+        List<Candidates> candidates = candidateService.getCandidatesByParty(id);
+        return ResponseEntity.ok(candidates);
+    }
+
+    @GetMapping("/search/{name}")
+    public  ResponseEntity<List<Candidates>>getByNameOrPartialName(@PathVariable String name){
+        List<Candidates> candidates = candidateService.searchCandidateByName(name);
+        return ResponseEntity.ok(candidates);
+    }
+
+    @GetMapping("/{id}")
+    public  ResponseEntity<CandidateResponse>getById(@PathVariable Long id  ){
+        Candidates candidates = candidateService.getCandidateById(id);
+        CandidateResponse response = new CandidateResponse();
+        response.setName(candidates.getName());
+        response.setCreatedAt(candidates.getCreatedAt());
+        response.setUpdatedAt(candidates.getUpdatedAt());
+        response.setId(candidates.getId());
+        response.setApprovedBy(candidates.getApprovedBy());
+        response.setStatus(candidates.getStatus());
+        return  ResponseEntity.ok(response);
+
+    }
 
 }

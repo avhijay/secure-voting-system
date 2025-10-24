@@ -12,6 +12,7 @@ public interface CandidateService {
     List<Candidates> getCandidatesByParty(Long partyId);
 
     Candidates approveCandidate(Long candidateId, Long userId);
+    Candidates rejectCandidate(Long candidateId);
 
     Candidates getCandidateById(Long id);
 
