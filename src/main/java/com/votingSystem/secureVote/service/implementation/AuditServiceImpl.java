@@ -2,6 +2,7 @@ package com.votingSystem.secureVote.service.implementation;
 
 import com.votingSystem.secureVote.entity.Audit;
 import com.votingSystem.secureVote.entity.Users;
+import com.votingSystem.secureVote.exception.ResourceNotFoundException;
 import com.votingSystem.secureVote.repository.AuditRepository;
 import com.votingSystem.secureVote.repository.UserRepository;
 import com.votingSystem.secureVote.service.AuditService;
@@ -121,9 +122,10 @@ lastHash =curr.getEntryHash();
     }
 
     @Override
-    public List<Audit> getAuditByUser(Long userId) {
-        return auditRepository.findByUserIdOrderByCreatedAtDesc(userId);
+    public List<Audit> getAuditByUser(Long id) {
+        return auditRepository.findByUserIdOrderByCreatedAtDesc(id).orElseThrow(()->new ResourceNotFoundException("no Audits available by the : "+id));
     }
+
 
     @Override
     public Audit getLatestAuditEntry() {

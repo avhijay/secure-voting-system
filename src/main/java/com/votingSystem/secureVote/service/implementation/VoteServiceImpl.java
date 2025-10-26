@@ -5,6 +5,7 @@ import com.votingSystem.secureVote.entity.Election;
 import com.votingSystem.secureVote.entity.Users;
 import com.votingSystem.secureVote.entity.Votes;
 import com.votingSystem.secureVote.exception.ResourceNotFoundException;
+import com.votingSystem.secureVote.exception.UserNotFound;
 import com.votingSystem.secureVote.repository.CandidateRepository;
 import com.votingSystem.secureVote.repository.ElectionRepository;
 import com.votingSystem.secureVote.repository.UserRepository;
@@ -114,7 +115,7 @@ public class VoteServiceImpl implements VoteService {
 
     @Override
     public Votes getByUserId(Long userId) {
-        Votes vote = voteRepository.findByUsersId(userId).orElseThrow(()->new ResourceNotFoundException("No votes found by id : "+userId ));
+        Votes vote = voteRepository.findByUsersId(userId).orElseThrow(()->new UserNotFound("No votes found by id : "+userId ));
         return vote;
     }
 

@@ -25,7 +25,7 @@ public class UserController {
         this.userService= userService1;
     }
 
-    @PostMapping
+    @PostMapping("/list")
     public  ResponseEntity<UserResponse>createUser(@Valid @RequestBody UserRequest userRequest){
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
         Users newUser = new Users(userRequest.getName(),userRequest.getIdentityKey(),userRequest.getEmailId(),userRequest.getPassword(),userRequest.getRole(),userRequest.getStatus(),userRequest.getClearanceLevel(),now,now);
@@ -57,7 +57,7 @@ public class UserController {
     }
 
 
-    @GetMapping("/{id}")
+    @GetMapping("/key/{id}")
     public  ResponseEntity<UserResponse>searchByIdentityKey(@PathVariable String id){
         Users user = userService.getUserByIdentityKey(id);
         UserResponse newResponse = new UserResponse();

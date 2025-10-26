@@ -8,11 +8,12 @@ import org.springframework.data.repository.query.Param;
 import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
 
 public interface AuditRepository extends JpaRepository<Audit,Long> {
 
     Audit findTopByOrderByIdDesc();
-    List<Audit>findByUserIdOrderByCreatedAtDesc(Long userId);
+     Optional<List<Audit>> findByUserIdOrderByCreatedAtDesc(Long userId);
     List<Audit>findByStatus(String status);
 
     @Query("Select aud FROM Audit aud " +

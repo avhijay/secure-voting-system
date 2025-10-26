@@ -30,13 +30,13 @@ public class AuditController {
         return ResponseEntity.ok(audits);
     }
 
-    @GetMapping
+    @GetMapping("/latest")
     public ResponseEntity<Audit>getLatest(){
         Audit audit = auditService.getLatestAuditEntry();
         return  ResponseEntity.ok(audit);
     }
 
-    @GetMapping
+    @GetMapping("/verify")
     public ResponseEntity<AuditResponse>verifyAudits(){
         Optional<Long>brokenAt = auditService.verifyAuditChaining();
 

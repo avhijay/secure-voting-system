@@ -4,6 +4,7 @@ import com.votingSystem.secureVote.entity.Candidates;
 import com.votingSystem.secureVote.exception.CandidateNotFound;
 import com.votingSystem.secureVote.exception.ResourceNotFoundException;
 import com.votingSystem.secureVote.repository.CandidateRepository;
+import com.votingSystem.secureVote.service.AuditService;
 import com.votingSystem.secureVote.service.CandidateService;
 
 import org.springframework.stereotype.Service;
@@ -16,9 +17,12 @@ public class CandidateServiceImpl implements CandidateService {
 
 
     private CandidateRepository candidateRepository;
+    private AuditService auditService;
 
-    public CandidateServiceImpl(CandidateRepository candidateRepository1){
+    public CandidateServiceImpl(CandidateRepository candidateRepository1 , AuditService auditService){
         this.candidateRepository=candidateRepository1;
+        this.auditService=auditService;
+
     }
 
     @Override
@@ -26,6 +30,7 @@ public class CandidateServiceImpl implements CandidateService {
         if(candidateRepository.findByElectionId(electionId)==null){
             throw new ResourceNotFoundException("No candidate found with election id : "+electionId);
         }
+
         return candidateRepository.findByElectionId(electionId) ;
     }
 
