@@ -6,4 +6,5 @@ public interface PartiesService {
 
     Parties findByName(String name);
     Parties findById(Long id);
+    Parties create(Parties parties);
 }

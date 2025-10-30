@@ -110,7 +110,7 @@ public ResponseEntity<ElectionResponse>getElectionById(@PathVariable Long electi
     }
 
 
-    @GetMapping("/ongoing")
+    @GetMapping("/upcoming")
     public ResponseEntity<List<Election>> getUpComingElections(){
         List<Election> elections = electionService.getUpcomingElection();
         return  ResponseEntity.ok(elections);

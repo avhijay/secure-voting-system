@@ -23,4 +23,9 @@ public class PartiesServiceImpl implements PartiesService {
     public Parties findById(Long id) {
         return partyRepository.findById(id).orElseThrow(()->new ResourceNotFoundException("No party Exist by Id :"+id));
     }
+
+    @Override
+    public Parties create(Parties parties) {
+        return partyRepository.save(parties);
+    }
 }
