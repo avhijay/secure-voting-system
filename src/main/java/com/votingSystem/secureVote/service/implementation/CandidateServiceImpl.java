@@ -28,17 +28,22 @@ public class CandidateServiceImpl implements CandidateService {
     @Override
     public List<Candidates> getCandidatesByElection(Long electionId) {
         if(candidateRepository.findByElectionId(electionId)==null){
+            auditService.logAction(0L,"accessing candidates by election ","Rejected","No candidate found ");
             throw new ResourceNotFoundException("No candidate found with election id : "+electionId);
-        }
 
+        }
+auditService.logAction(0L,"accessing candidates by election ","Approved","none");
         return candidateRepository.findByElectionId(electionId) ;
     }
 
     @Override
     public List<Candidates> getCandidatesByParty(Long partyId) {
         if (candidateRepository.findByPartyId(partyId)==null){
+            auditService.logAction(0L,"Accessing candidate through partyId","Rejected","No partyId found");
             throw  new ResourceNotFoundException("No candidate with the partyId"+partyId);
+
         }
+        auditService.logAction(0L,"Accessing candidate through partyId","Approved","partyId found"+partyId);
         return candidateRepository.findByPartyId(partyId);
     }
 
@@ -47,6 +52,7 @@ public class CandidateServiceImpl implements CandidateService {
         Candidates candidates  = candidateRepository.findById(candidateId).orElseThrow(()->new ResourceNotFoundException("No candidate found with the id :"+candidateId));
                     candidates.setApprovedBy(userId);
                     candidates.setStatus("Approved");
+        auditService.logAction(userId,"candidate approval ","Approved","candidate id "+candidateId+"by user :"+userId);
 
                 return candidateRepository.save(candidates);
     }
@@ -56,24 +62,33 @@ public class CandidateServiceImpl implements CandidateService {
         Candidates candidates  = candidateRepository.findById(candidateId).orElseThrow(()->new ResourceNotFoundException("No candidate found with the id :"+candidateId));
         candidates.setStatus("Rejected");
         System.out.println("Candidate rejected :"+candidateId);
+        auditService.logAction(0L,"RejectedCandidate","Approved","rejected candidate :"+candidateId);
         return candidateRepository.save(candidates);
     }
 
     @Override
     public Candidates getCandidateById(Long id) {
+
+        auditService.logAction(0L,"Accessed candidate","Approved","Candidate "+id);
         return candidateRepository.findById(id).orElseThrow(()->new CandidateNotFound("The particular id not found : "+id));
     }
 
     @Override
     public List<Candidates> searchCandidateByName(String name) {
         if ( candidateRepository.findByNameContainingIgnoreCase(name)==null){
+            auditService.logAction(0L,"candidate search by name ","Rejected","No candidate found"+name);
           throw new CandidateNotFound("Candidate Not Found with Name :"+name);
         }
+        auditService.logAction(0L,"candidate search by name ","Approved","candidate found"+name);
         return candidateRepository.findByNameContainingIgnoreCase(name);
     }
 
     @Override
     public Candidates createCandidate(Candidates candidates) {
+
+        auditService.logAction(0L,"candidate created  ","Approved","Candidate created "+candidates.getName());
+
+
         return candidateRepository.save(candidates);
     }
 
