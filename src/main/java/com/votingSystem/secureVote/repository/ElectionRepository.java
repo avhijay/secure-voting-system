@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.sql.Timestamp;
 import java.util.List;
 
-public interface ElectionRepository extends JpaRepository<Election,Long> {
+public interface
+
+ElectionRepository extends JpaRepository<Election,Long> {
 
     Election findByName(String name);
 
