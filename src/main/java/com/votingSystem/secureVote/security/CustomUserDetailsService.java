@@ -17,9 +17,10 @@ import org.springframework.stereotype.Service;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    @Autowired
-    public CustomUserDetailsService(UserRepository userRepository){
-        this.userRepository=userRepository;
+
+
+    public CustomUserDetailsService(UserRepository userRepository) {
+        this.userRepository = userRepository;
     }
 
 
@@ -27,23 +28,23 @@ public class CustomUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String username)
             throws UsernameNotFoundException {
 
-        Users user = userRepository.findByIdentityKey(username);
-        if (user==null){
-            throw new UserNotFound("no User found : "+username);
+        if (userRepository.findByIdentityKey(username) == null) {
+            throw new UserNotFound("no User found : " + username);
+        } else {
+
+            Users user = userRepository.findByIdentityKey(username);
+
+
+
+
+            return org.springframework.security.core.userdetails.User.builder()
+                    .username(user.getName())
+                    .password(user.getPassword())
+                    .roles(user.getRole())
+                    .disabled(!"ACTIVE".equalsIgnoreCase(user.getStatus()))
+                    .build();
+
+
         }
-        String dataBaseRole = user.getRole();
-
-
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getName())
-                .password(user.getPassword())
-                .roles(dataBaseRole)
-                .disabled(!"ACTIVE".equalsIgnoreCase(user.getStatus()))
-                .build();
-
-
-
-
-
     }
 }

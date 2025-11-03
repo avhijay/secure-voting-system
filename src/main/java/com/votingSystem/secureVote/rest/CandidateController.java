@@ -70,6 +70,7 @@ public class CandidateController {
          response.setCreatedAt(candidates.getCreatedAt());
          response.setUpdatedAt(candidates.getUpdatedAt());
          response.setId(candidates.getId());
+
          response.setApprovedBy(candidates.getApprovedBy());
          response.setStatus(candidates.getStatus());
          return  ResponseEntity.ok(response);

@@ -25,7 +25,7 @@ public class ElectionController {
 
 
     @PostMapping
-    public ResponseEntity<ElectionResponse>createUser( @Valid @RequestBody ElectionRequest request){
+    public ResponseEntity<ElectionResponse>create( @Valid @RequestBody ElectionRequest request){
 
         Election election = new Election();
         Timestamp now = Timestamp.valueOf(LocalDateTime.now());
