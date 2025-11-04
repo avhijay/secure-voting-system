@@ -37,12 +37,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
 
 
-            return org.springframework.security.core.userdetails.User.builder()
-                    .username(user.getName())
-                    .password(user.getPassword())
-                    .roles(user.getRole())
-                    .disabled(!"ACTIVE".equalsIgnoreCase(user.getStatus()))
-                    .build();
+
+
+
+            return new CustomUserDetails(user);
 
 
         }
