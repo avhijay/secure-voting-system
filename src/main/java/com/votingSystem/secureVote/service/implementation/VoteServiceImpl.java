@@ -12,6 +12,7 @@ import com.votingSystem.secureVote.repository.UserRepository;
 import com.votingSystem.secureVote.repository.VoteRepository;
 import com.votingSystem.secureVote.service.AuditService;
 import com.votingSystem.secureVote.service.VoteService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,13 +29,15 @@ public class VoteServiceImpl implements VoteService {
     private ElectionRepository electionRepository;
     private UserRepository userRepository;
     private AuditService auditService;
+    private  final VoteTracker voteTracker;
 
-    public VoteServiceImpl(VoteRepository voteRepository1, CandidateRepository candidates1, ElectionRepository electionRepository1, UserRepository userRepository1, AuditService auditService1) {
+    public VoteServiceImpl(VoteRepository voteRepository1, CandidateRepository candidates1, ElectionRepository electionRepository1, UserRepository userRepository1, AuditService auditService1  , VoteTracker voteTracker) {
         this.voteRepository = voteRepository1;
         candidateRepository = candidates1;
         this.electionRepository = electionRepository1;
         this.userRepository = userRepository1;
         this.auditService = auditService1;
+        this.voteTracker = voteTracker;
     }
 
     @Transactional
@@ -51,7 +54,8 @@ public class VoteServiceImpl implements VoteService {
             auditService.logAction(voterId, "Cast_vote", "Failure", "wrong candidate selection (Mismatch with election id ) ");
             throw new RuntimeException("Candidate not available for the current election: " + candidateId + "in election: " + electionId);
         }
-        if (!hasUserVoted(voterId, electionId)) {
+
+        if (!voteTracker.hasVoted(electionId,voterId)) {
             newVote.setCandidates(newCandidate);
 
             Election newElection = electionRepository.findById(electionId).orElseThrow(() -> new RuntimeException("Election not found : " + electionId));
@@ -72,6 +76,7 @@ public class VoteServiceImpl implements VoteService {
             throw new RuntimeException("User has already Voted");
         }
         Votes saved = voteRepository.save(newVote);
+        voteTracker.casting(electionId,voterId);
         auditService.logAction(voterId, "Casting vote", "Sucess", "Voting process by the user ");
         voteRepository.save(newVote);
         return saved;
@@ -123,7 +128,27 @@ public class VoteServiceImpl implements VoteService {
     public Boolean hasTheUserVoted(Long electionId, Long userId) {
         return null;
     }
+
+
+    @PostConstruct
+    public void inbuiltVoteMemory(){
+        List<Votes>findAll = voteRepository.findAll();
+
+        for (Votes vote : findAll) {
+            voteTracker.casting(vote.getElection().getId(), vote.getUsers().getId());
+        }
+        System.out.println("VoteInBuiltMemory Initialized");
+
+    }
+
+
+
+
 }
+
+
+
+
 
 
 

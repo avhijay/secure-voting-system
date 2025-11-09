@@ -1,6 +1,7 @@
 package com.votingSystem.secureVote.service.implementation;
 
 import com.votingSystem.secureVote.entity.Candidates;
+import com.votingSystem.secureVote.entity.Votes;
 import com.votingSystem.secureVote.exception.AccessLevelNotSufficient;
 import com.votingSystem.secureVote.exception.CandidateNotFound;
 import com.votingSystem.secureVote.exception.ResourceNotFoundException;
@@ -9,6 +10,7 @@ import com.votingSystem.secureVote.security.AuthContext;
 import com.votingSystem.secureVote.service.AuditService;
 import com.votingSystem.secureVote.service.CandidateService;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -147,6 +149,14 @@ auditService.logAction(LogsUserId,"accessing candidates by election ","Approved"
 
         return candidateRepository.save(candidates);
     }
+
+
+
+
+
+
+
+
 
 
 }

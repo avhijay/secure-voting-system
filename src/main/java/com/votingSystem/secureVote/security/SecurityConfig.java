@@ -50,7 +50,21 @@ public class SecurityConfig {
                         //VOTE
                         .requestMatchers("/api/votes/**").hasRole("ADMIN")
                         .requestMatchers("/api/votes/cast").hasAnyRole("VOTER","ADMIN","CANDIDATE")
+
+
+
+                        //USERS
+
+                        .requestMatchers("/api/users/**").permitAll()
+
                         .anyRequest().authenticated()
+
+
+
+
+
+
+
                 ).httpBasic(Customizer.withDefaults());
 return http.build();
     }

@@ -52,7 +52,7 @@ public Users(){}
 
     public Users(String name, String identityKey, String email, String password, String role, String status, Integer clearanceLevel, Timestamp createdAt, Timestamp updatedAt) {
         this.name = name;
-        identityKey = identityKey;
+        this.identityKey = identityKey;
         this.email = email;
         this.password = password;
         this.role = role;
@@ -83,7 +83,7 @@ public Users(){}
     }
 
     public void setIdentityKey(String identityKey) {
-        identityKey = identityKey;
+       this.identityKey = identityKey;
     }
 
     public String getEmail() {
