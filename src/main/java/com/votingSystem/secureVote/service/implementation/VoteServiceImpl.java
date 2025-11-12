@@ -1,5 +1,6 @@
 package com.votingSystem.secureVote.service.implementation;
 
+import com.votingSystem.secureVote.dsa.VoteTracker;
 import com.votingSystem.secureVote.entity.Candidates;
 import com.votingSystem.secureVote.entity.Election;
 import com.votingSystem.secureVote.entity.Users;
@@ -19,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class VoteServiceImpl implements VoteService {
