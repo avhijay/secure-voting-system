@@ -1,5 +1,6 @@
 package com.votingSystem.secureVote.rest;
 
+import com.votingSystem.secureVote.Enums.ElectionStatus;
 import com.votingSystem.secureVote.dto.ElectionRequest;
 import com.votingSystem.secureVote.dto.ElectionResponse;
 import com.votingSystem.secureVote.entity.Election;
@@ -118,7 +119,7 @@ public ResponseEntity<ElectionResponse>getElectionById(@PathVariable Long electi
 
     @PatchMapping("/{id}/{status}")
 
-    public  ResponseEntity<ElectionResponse>updateElectionStatus(@PathVariable Long id , @PathVariable String status){
+    public  ResponseEntity<ElectionResponse>updateElectionStatus(@PathVariable Long id , @PathVariable ElectionStatus status){
 
         Election election = electionService.updateElectionStatus(id,status);
 

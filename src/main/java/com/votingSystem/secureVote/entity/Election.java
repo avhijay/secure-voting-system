@@ -1,5 +1,6 @@
 package com.votingSystem.secureVote.entity;
 
+import com.votingSystem.secureVote.Enums.ElectionStatus;
 import jakarta.persistence.*;
 
 import java.sql.Timestamp;
@@ -20,8 +21,9 @@ public class Election {
     @Column(name = "description")
     private String description;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private String status;
+    private ElectionStatus status;
 
     @Column(name = "start_date", nullable = false)
     private Timestamp startDate;
@@ -42,17 +44,16 @@ public class Election {
 
     public Election(){}
 
-    public Election(String name, String description, String status, Timestamp startDate, Timestamp endDate, Users createdBy, Timestamp createdAt, Timestamp updatedAt) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
-        this.startDate = startDate;
-        this.endDate = endDate;
-        this.createdBy = createdBy;
-        this.createdAt = createdAt;
+    public Election(Timestamp updatedAt, Timestamp createdAt, Users createdBy, Timestamp endDate, Timestamp startDate, ElectionStatus status, String description, String name) {
         this.updatedAt = updatedAt;
+        this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.endDate = endDate;
+        this.startDate = startDate;
+        this.status = status;
+        this.description = description;
+        this.name = name;
     }
-
 
     public Long getId() {
         return id;
@@ -78,11 +79,11 @@ public class Election {
         this.description = description;
     }
 
-    public String getStatus() {
+    public ElectionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ElectionStatus status) {
         this.status = status;
     }
 
@@ -125,7 +126,6 @@ public class Election {
     public void setUpdatedAt(Timestamp updatedAt) {
         this.updatedAt = updatedAt;
     }
-
 
     @Override
     public String toString() {

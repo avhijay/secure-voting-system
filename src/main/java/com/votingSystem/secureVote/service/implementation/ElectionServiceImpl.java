@@ -1,5 +1,6 @@
 package com.votingSystem.secureVote.service.implementation;
 
+import com.votingSystem.secureVote.Enums.ElectionStatus;
 import com.votingSystem.secureVote.entity.Election;
 import com.votingSystem.secureVote.repository.ElectionRepository;
 import com.votingSystem.secureVote.service.ElectionService;
@@ -48,7 +49,7 @@ public class ElectionServiceImpl implements ElectionService {
     }
 @Transactional
     @Override
-    public Election updateElectionStatus(Long id, String status) {
+    public Election updateElectionStatus(Long id, ElectionStatus status) {
         Election theElection = electionRepository.findById(id).orElseThrow(()->new RuntimeException("Id not found  :"+id));
         theElection.setStatus(status);
         return theElection ;
@@ -57,7 +58,7 @@ public class ElectionServiceImpl implements ElectionService {
     @Override
     public void closeElection(Long id) {
         Election closeElection = electionRepository.findById(id).orElseThrow(()->new RuntimeException("Incorrect election id :"+id));
-        closeElection.setStatus("Closed");
+        closeElection.setStatus(ElectionStatus.Completed);
 
 
     }

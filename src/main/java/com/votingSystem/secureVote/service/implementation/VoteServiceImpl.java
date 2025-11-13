@@ -1,12 +1,12 @@
 package com.votingSystem.secureVote.service.implementation;
 
+import com.votingSystem.secureVote.Enums.ElectionStatus;
 import com.votingSystem.secureVote.dsa.VoteTracker;
 import com.votingSystem.secureVote.entity.Candidates;
 import com.votingSystem.secureVote.entity.Election;
 import com.votingSystem.secureVote.entity.Users;
 import com.votingSystem.secureVote.entity.Votes;
-import com.votingSystem.secureVote.exception.ResourceNotFoundException;
-import com.votingSystem.secureVote.exception.UserNotFound;
+import com.votingSystem.secureVote.exception.*;
 import com.votingSystem.secureVote.repository.CandidateRepository;
 import com.votingSystem.secureVote.repository.ElectionRepository;
 import com.votingSystem.secureVote.repository.UserRepository;
@@ -14,6 +14,10 @@ import com.votingSystem.secureVote.repository.VoteRepository;
 import com.votingSystem.secureVote.service.AuditService;
 import com.votingSystem.secureVote.service.VoteService;
 import jakarta.annotation.PostConstruct;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,12 +28,16 @@ import java.util.List;
 @Service
 public class VoteServiceImpl implements VoteService {
 
+    private static final Logger log = LoggerFactory.getLogger(VoteServiceImpl.class);
     private VoteRepository voteRepository;
     private CandidateRepository candidateRepository;
     private ElectionRepository electionRepository;
     private UserRepository userRepository;
     private AuditService auditService;
     private  final VoteTracker voteTracker;
+
+    @Enumerated(EnumType.STRING)
+    private ElectionStatus electionStatus;
 
     public VoteServiceImpl(VoteRepository voteRepository1, CandidateRepository candidates1, ElectionRepository electionRepository1, UserRepository userRepository1, AuditService auditService1  , VoteTracker voteTracker) {
         this.voteRepository = voteRepository1;
@@ -43,42 +51,56 @@ public class VoteServiceImpl implements VoteService {
     @Transactional
     @Override
     public Votes castVote(Long voterId, Long electionId, Long candidateId) {
+        log.info("User {} is attempting to vote in Election {}",voterId,electionId);
 
         Votes newVote = new Votes();
 
         Candidates newCandidate;
-        newCandidate = candidateRepository.findById(candidateId).orElseThrow(() -> new RuntimeException("Candidate id not found " + candidateId));
+
+        log.debug("Validating Candidate {} for election {}",candidateId,electionId);
+        newCandidate = candidateRepository.findById(candidateId).orElseThrow(() ->  new CandidateNotFound("Candidate id not found " + candidateId));
 
 
         if (!newCandidate.getElection().getId().equals(electionId)) {
-            auditService.logAction(voterId, "Cast_vote", "Failure", "wrong candidate selection (Mismatch with election id ) ");
-            throw new RuntimeException("Candidate not available for the current election: " + candidateId + "in election: " + electionId);
+            auditService.logAction(voterId, "Casting vote", "Failure", "wrong candidate selection (Mismatch with election id ) ");
+            log.error("Candidate {} mismatch with election {}",candidateId,electionId);
+            throw new CandidateNotFound ("Candidate not available for the current election: " + candidateId + "in election: " + electionId);
         }
+
+
 
         if (!voteTracker.hasVoted(electionId,voterId)) {
             newVote.setCandidates(newCandidate);
+log.debug("Validating election {}",electionId);
+            Election newElection = electionRepository.findById(electionId).orElseThrow(() -> new ElectionNotFound("Election not found" + electionId));
 
-            Election newElection = electionRepository.findById(electionId).orElseThrow(() -> new RuntimeException("Election not found : " + electionId));
 
-            if (!newElection.getStatus().equalsIgnoreCase("ONGOING")) {
-                auditService.logAction(voterId, "Cast_vote", "Failure", "Election not active :" + electionId);
-                throw new RuntimeException("Election is currently not active :" + electionId);
+            //Check if election is onGoing
+            if (newElection.getStatus() == ElectionStatus.UpComing) {
+                log.error("Election {} not active",electionId);
+                auditService.logAction(voterId, "Casting vote", "Failure", "Election not active :" + electionId);
+                throw new ElectionNotActiveException ("Election is currently not active :" + electionId);
             }
 
             newVote.setElection(newElection);
-
-            Users newUser = userRepository.findById(voterId).orElseThrow(() -> new RuntimeException("No voter found :" + voterId));
-
+            Users newUser = userRepository.findById(voterId).orElseThrow(() -> new UserNotFound("No voter found :" + voterId));
             newVote.setUsers(newUser);
             newVote.setVoteCastAt(Timestamp.valueOf(LocalDateTime.now()));
+
+            //if user has voted
         } else {
+            log.warn("User {} already voted in election {}",voterId,electionId);
             auditService.logAction(voterId, "Casting vote ", "Failure", "");
-            throw new RuntimeException("User has already Voted");
+            throw new DuplicateVoteException("User has already Voted");
         }
+
+        // after all checks
+        log.debug("Saving vote in election {}",electionId);
         Votes saved = voteRepository.save(newVote);
         voteTracker.casting(electionId,voterId);
-        auditService.logAction(voterId, "Casting vote", "Sucess", "Voting process by the user ");
-        voteRepository.save(newVote);
+        auditService.logAction(voterId, "Casting vote", "Success", "Voting process by the user ");
+        log.info("Vote by User {} registered for candidate {} in election {}",voterId,candidateId,electionId);
+        log.debug("All validations passed for User {} to vote in election {} for Candidate {}",voterId,electionId,candidateId);
         return saved;
     }
 

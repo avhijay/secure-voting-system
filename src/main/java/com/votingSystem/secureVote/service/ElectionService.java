@@ -1,5 +1,6 @@
 package com.votingSystem.secureVote.service;
 
+import com.votingSystem.secureVote.Enums.ElectionStatus;
 import com.votingSystem.secureVote.entity.Election;
 
 import java.util.List;
@@ -18,7 +19,7 @@ public interface ElectionService {
 
     List<Election> getUpcomingElection();
 
-    Election updateElectionStatus(Long id , String status);
+    Election updateElectionStatus(Long id , ElectionStatus status);
 
     void closeElection(Long id);
 

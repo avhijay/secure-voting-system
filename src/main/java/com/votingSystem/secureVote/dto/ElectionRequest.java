@@ -1,6 +1,7 @@
 package com.votingSystem.secureVote.dto;
 
 
+import com.votingSystem.secureVote.Enums.ElectionStatus;
 import com.votingSystem.secureVote.entity.Users;
 
 import java.security.Timestamp;
@@ -13,7 +14,7 @@ public class ElectionRequest {
 
     private String description;
 
-    private String status;
+    private ElectionStatus status;
 
     private java.sql.Timestamp endDate;
 
@@ -25,13 +26,13 @@ public class ElectionRequest {
     public ElectionRequest(){}
 
 
-    public ElectionRequest(String name, String description, String status, java.sql.Timestamp endDate, Users createdBy, Timestamp createdAt) {
+    public ElectionRequest(String name, Timestamp createdAt, Users createdBy, java.sql.Timestamp endDate, ElectionStatus status, String description) {
         this.name = name;
-        this.description = description;
-        this.status = status;
-        this.endDate = endDate;
-        this.createdBy = createdBy;
         this.createdAt = createdAt;
+        this.createdBy = createdBy;
+        this.endDate = endDate;
+        this.status = status;
+        this.description = description;
     }
 
     public String getName() {
@@ -42,6 +43,14 @@ public class ElectionRequest {
         this.name = name;
     }
 
+    public Timestamp getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(Timestamp createdAt) {
+        this.createdAt = createdAt;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -50,20 +59,12 @@ public class ElectionRequest {
         this.description = description;
     }
 
-    public String getStatus() {
+    public ElectionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(ElectionStatus status) {
         this.status = status;
-    }
-
-    public java.sql.Timestamp getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(java.sql.Timestamp endDate) {
-        this.endDate = endDate;
     }
 
     public Users getCreatedBy() {
@@ -74,11 +75,11 @@ public class ElectionRequest {
         this.createdBy = createdBy;
     }
 
-    public Timestamp getCreatedAt() {
-        return createdAt;
+    public java.sql.Timestamp getEndDate() {
+        return endDate;
     }
 
-    public void setCreatedAt(Timestamp createdAt) {
-        this.createdAt = createdAt;
+    public void setEndDate(java.sql.Timestamp endDate) {
+        this.endDate = endDate;
     }
 }
