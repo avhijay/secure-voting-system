@@ -1,11 +1,12 @@
 package com.votingSystem.secureVote.dto;
 
+import com.votingSystem.secureVote.entity.Users;
 import jakarta.validation.constraints.NotNull;
 
 public class UserResponse {
 
 
-
+private Long id;
     private String name;
 
     private String role;
@@ -16,6 +17,17 @@ public class UserResponse {
 
     private String emailId;
 
+    public UserResponse(Users saved) {}
+    public UserResponse(){}
+
+    public UserResponse(Long id, String name, String role, String status, Integer clearanceLevel, String emailId) {
+        this.id = id;
+        this.name = name;
+        this.role = role;
+        this.status = status;
+        this.clearanceLevel = clearanceLevel;
+        this.emailId = emailId;
+    }
 
     public Integer getClearanceLevel() {
         return clearanceLevel;
@@ -56,4 +68,10 @@ public class UserResponse {
     public void setEmailId(String emailId) {
         this.emailId = emailId;
     }
+
+    public Long getId() {
+        return id;
+    }
+
+
 }

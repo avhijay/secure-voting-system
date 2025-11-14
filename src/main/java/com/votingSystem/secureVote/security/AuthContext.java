@@ -7,7 +7,8 @@ public class AuthContext {
 
     public static CustomUserDetails details(){
 
-        return (CustomUserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return (CustomUserDetails) SecurityContextHolder
+                .getContext().getAuthentication().getPrincipal();
 
 
 
@@ -16,7 +17,7 @@ public class AuthContext {
 
 
     public static Long userId(){
-        return details().getUserID();
+        return details().getUserId();
 
     }
 

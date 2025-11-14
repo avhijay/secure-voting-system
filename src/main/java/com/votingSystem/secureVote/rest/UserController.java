@@ -27,18 +27,10 @@ public class UserController {
 
     @PostMapping
     public  ResponseEntity<UserResponse>createUser(@Valid @RequestBody UserRequest userRequest){
-        Timestamp now = Timestamp.valueOf(LocalDateTime.now());
-        Users newUser = new Users(userRequest.getName(),userRequest.getIdentityKey(),userRequest.getEmailId(),userRequest.getPassword(),userRequest.getRole(),userRequest.getStatus(),userRequest.getClearanceLevel(),now,now);
-        Users save = userService.createUser(newUser);
-        UserResponse response= new UserResponse();
-        response.setName(save.getName());
-        response.setClearanceLevel(save.getClearanceLevel());
-        response.setStatus(save.getStatus());
-        response.setRole(save.getRole());
-        response.setEmailId(save.getEmail());
+        UserResponse response = userService.createUser(userRequest);
 
 
-        URI location = URI.create("/api/users"+newUser.getId());
+        URI location = URI.create("/api/users"+response.getId());
         return ResponseEntity.created(location).body(response);
 
     }

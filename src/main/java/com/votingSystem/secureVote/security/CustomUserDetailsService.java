@@ -14,7 +14,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CustomUserDetailsService implements UserDetailsService {
+public class CustomUserDetailsService implements UserDetailsService { // spring security built-in interface
 
     private final UserRepository userRepository;
 
@@ -23,26 +23,13 @@ public class CustomUserDetailsService implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-
     @Override
-    public UserDetails loadUserByUsername(String username)
-            throws UsernameNotFoundException {
-
-        if (userRepository.findByIdentityKey(username) == null) {
-            throw new UserNotFound("no User found : " + username);
-        } else {
-
-            Users user = userRepository.findByIdentityKey(username);
+    // username spring thinks the user is logging from
+    public UserDetails loadUserByUsername(String identityKey) throws UsernameNotFoundException {
+        Users user = userRepository.findByIdentityKey(identityKey).orElseThrow(()->new UserNotFound("User not found   with identity key :"+identityKey));
 
 
 
-
-
-
-
-            return new CustomUserDetails(user);
-
-
-        }
+        return  new CustomUserDetails(user); // wrapping users entity to security format
     }
 }

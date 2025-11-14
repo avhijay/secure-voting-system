@@ -28,10 +28,19 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(HttpSecurity http)throws Exception{
-        AuthenticationManagerBuilder  amb=http.getSharedObject(AuthenticationManagerBuilder.class);
-        amb.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
-        return amb.build();
+    // access to HttpSecurity contextt
+    public AuthenticationManager authenticationManager (HttpSecurity http)throws Exception{
+        AuthenticationManagerBuilder authenticationBuilder =
+                http.getSharedObject(AuthenticationManagerBuilder.class);  // get shared object spring creates one amb builder and every where we retrieve the same.userDetailsService(AuthenticationManagerBuilder.class
+
+        authenticationBuilder
+                .userDetailsService(userDetailsService) // using userDetailService to fetch user
+                .passwordEncoder(passwordEncoder()); // compare password
+        return authenticationBuilder.build();
+
+
+
+
     }
 
 
@@ -39,19 +48,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
         http.csrf(csrf->csrf.disable())
-                .authorizeHttpRequests(configure->configure
+                .authorizeHttpRequests(auth ->auth
 
                         .requestMatchers("/h2-console/**").permitAll()
                         // access by all endPoints ->
 
                         .requestMatchers("/api/auth/**").permitAll()
 
-                        .requestMatchers("/api/candidates/search/{name}").hasAnyRole("VOTER","ADMIN","CANDIDATE")
-                        .requestMatchers("/api/candidates/{id}").hasRole("ADMIN")
-                        .requestMatchers("/api/candidates/election/{id}").hasRole("ADMIN")
-                        .requestMatchers("/api/candidates/reject/{id}/by/{userId}").hasRole("ADMIN")
-                        .requestMatchers("/api/candidates/approve/{id}/by/{userId}").hasRole("ADMIN")
-                        .requestMatchers("/api/candidates").hasRole("ADMIN")
+                        .requestMatchers("/api/candidates/search/*").hasAnyRole("VOTER","ADMIN","CANDIDATE")
+                        .requestMatchers("/api/candidates/**").hasRole("ADMIN")
+
+                        .requestMatchers("/api/candidates/reject/*/by/*").hasRole("ADMIN")
+                        .requestMatchers("/api/candidates/approve/*/by/*").hasRole("ADMIN")
+
 
                         //audits
                         .requestMatchers("/api/audits/**").hasRole("ADMIN")
@@ -59,7 +68,7 @@ public class SecurityConfig {
                         //election
 
                         .requestMatchers("/api/elections/**").hasRole("ADMIN")
-                        .requestMatchers("/api/elections/{name}").hasRole("VOTER")
+
 
                         //VOTE
                         .requestMatchers("/api/votes/**").hasRole("ADMIN")
@@ -69,7 +78,7 @@ public class SecurityConfig {
 
                         //USERS
 
-                        .requestMatchers("/api/users/**").permitAll()
+                        .requestMatchers("/api/users/**").hasRole("ADMIN")
 
                         .anyRequest().authenticated()
 
@@ -80,6 +89,7 @@ public class SecurityConfig {
 
 
                 ).httpBasic(Customizer.withDefaults());
+
 
 return http.build();
     }

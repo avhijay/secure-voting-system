@@ -106,6 +106,8 @@ log.debug("Validating election {}",electionId);
 
     @Override
     public boolean hasUserVoted(Long voterId, Long electionId) {
+        log.info("Voting condition check for user {} in election {} has started ",voterId,electionId);
+        log.debug("Check for User{} voting Status in election{}",voterId,electionId);
         return voteRepository.findByUsersIdAndElectionId(voterId, electionId) != null;
 
     }
