@@ -3,7 +3,6 @@ package com.votingSystem.secureVote.rest;
 
 import com.votingSystem.secureVote.dto.UserRequest;
 import com.votingSystem.secureVote.dto.UserResponse;
-import com.votingSystem.secureVote.dto.VoteRequest;
 import com.votingSystem.secureVote.entity.Users;
 import com.votingSystem.secureVote.service.UserService;
 import jakarta.validation.Valid;
@@ -11,8 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -25,7 +22,7 @@ public class UserController {
         this.userService= userService1;
     }
 
-    @PostMapping
+    @PostMapping("/create")
     public  ResponseEntity<UserResponse>createUser(@Valid @RequestBody UserRequest userRequest){
         UserResponse response = userService.createUser(userRequest);
 
@@ -62,19 +59,16 @@ public class UserController {
         return  ResponseEntity.ok(newResponse);
     }
 
-    @GetMapping("/{status}")
-    public  ResponseEntity<List<Users>>searchByStatus(@PathVariable String status){
-        List<Users> user = userService.getUserByStatus(status);
-
-
-        return  ResponseEntity.ok(user);
+    @GetMapping("/status/{status}")
+    public  ResponseEntity<List<UserResponse>>searchByStatus(@PathVariable String status){
+        return ResponseEntity.ok(userService.getUserByStatus(status));
     }
-    @GetMapping("/{role}")
-    public  ResponseEntity<List<Users>>getByRole(@PathVariable String role){
-        List<Users> user = userService.getUserByStatus(role);
+    @GetMapping("/role/{role}")
+    public  ResponseEntity<List<UserResponse>>getByRole(@PathVariable String role){
+     return ResponseEntity.ok(userService.getUserByRole(role));
 
 
-        return  ResponseEntity.ok(user);
+
     }
 
 

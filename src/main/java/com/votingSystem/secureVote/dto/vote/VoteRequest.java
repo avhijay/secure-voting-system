@@ -1,20 +1,17 @@
-package com.votingSystem.secureVote.dto;
+package com.votingSystem.secureVote.dto.vote;
 
-public class VoteResponse {
-    private  Long voteId;
+import jakarta.validation.constraints.NotNull;
+
+public class VoteRequest {
+    @NotNull(message = "voterId cant be null")
     private Long voterId;
+
+    @NotNull(message = "electionId cant be null")
     private Long electionId;
+
+    @NotNull(message = "candidateId cant be null")
     private Long candidateId;
-    private String castAt;
 
-
-    public Long getVoteId() {
-        return voteId;
-    }
-
-    public void setVoteId(Long voteId) {
-        this.voteId = voteId;
-    }
 
     public Long getVoterId() {
         return voterId;
@@ -38,13 +35,5 @@ public class VoteResponse {
 
     public void setCandidateId(Long candidateId) {
         this.candidateId = candidateId;
-    }
-
-    public String getCastAt() {
-        return castAt;
-    }
-
-    public void setCastAt(String castAt) {
-        this.castAt = castAt;
     }
 }

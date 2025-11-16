@@ -2,6 +2,10 @@ package com.votingSystem.secureVote.service.implementation;
 
 import com.votingSystem.secureVote.Enums.ElectionStatus;
 import com.votingSystem.secureVote.dsa.VoteTracker;
+import com.votingSystem.secureVote.dto.vote.GetByElectionIdRequest;
+import com.votingSystem.secureVote.dto.vote.GetByUserIdRequest;
+import com.votingSystem.secureVote.dto.vote.GetByVoteIdRequest;
+import com.votingSystem.secureVote.dto.vote.VoteResponse;
 import com.votingSystem.secureVote.entity.Candidates;
 import com.votingSystem.secureVote.entity.Election;
 import com.votingSystem.secureVote.entity.Users;
@@ -11,6 +15,7 @@ import com.votingSystem.secureVote.repository.CandidateRepository;
 import com.votingSystem.secureVote.repository.ElectionRepository;
 import com.votingSystem.secureVote.repository.UserRepository;
 import com.votingSystem.secureVote.repository.VoteRepository;
+import com.votingSystem.secureVote.security.AuthContext;
 import com.votingSystem.secureVote.service.AuditService;
 import com.votingSystem.secureVote.service.VoteService;
 import jakarta.annotation.PostConstruct;
@@ -48,10 +53,11 @@ public class VoteServiceImpl implements VoteService {
         this.voteTracker = voteTracker;
     }
 
-    @Transactional
+    @Transactional  // to do = METHOD TO BIG , MAKE 2 SEPARATE METHODS
     @Override
     public Votes castVote(Long voterId, Long electionId, Long candidateId) {
-        log.info("User {} is attempting to vote in Election {}",voterId,electionId);
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION= CAST_VOTE | BY USER_ID={}  |IN ELECTION ={} | STATUS = START ",voterId,electionId);
 
         Votes newVote = new Votes();
 
@@ -63,7 +69,7 @@ public class VoteServiceImpl implements VoteService {
 
         if (!newCandidate.getElection().getId().equals(electionId)) {
             auditService.logAction(voterId, "Casting vote", "Failure", "wrong candidate selection (Mismatch with election id ) ");
-            log.error("Candidate {} mismatch with election {}",candidateId,electionId);
+            log.warn("Candidate {} mismatch with election {}",candidateId,electionId);
             throw new CandidateNotFound ("Candidate not available for the current election: " + candidateId + "in election: " + electionId);
         }
 
@@ -77,7 +83,7 @@ log.debug("Validating election {}",electionId);
 
             //Check if election is onGoing
             if (newElection.getStatus() == ElectionStatus.UpComing) {
-                log.error("Election {} not active",electionId);
+                log.error(Exception.class.getName());
                 auditService.logAction(voterId, "Casting vote", "Failure", "Election not active :" + electionId);
                 throw new ElectionNotActiveException ("Election is currently not active :" + electionId);
             }
@@ -99,53 +105,82 @@ log.debug("Validating election {}",electionId);
         Votes saved = voteRepository.save(newVote);
         voteTracker.casting(electionId,voterId);
         auditService.logAction(voterId, "Casting vote", "Success", "Voting process by the user ");
-        log.info("Vote by User {} registered for candidate {} in election {}",voterId,candidateId,electionId);
+        log.info("ACTION= CAST_VOTE | BY USER_ID={}  |IN ELECTION ={} | STATUS = SUCCESS ",voterId,electionId);
         log.debug("All validations passed for User {} to vote in election {} for Candidate {}",voterId,electionId,candidateId);
         return saved;
     }
 
+
+
+
+
+
+
+
+
     @Override
     public boolean hasUserVoted(Long voterId, Long electionId) {
-        log.info("Voting condition check for user {} in election {} has started ",voterId,electionId);
+        Long sessionId = AuthContext.userId();
+
+        log.info("ACTION= CHECK_VOTE_STATUS | BY USER_ID={}  |IN ELECTION ={} | FOR USER={}| STATUS = START ",sessionId,electionId,voterId);
         log.debug("Check for User{} voting Status in election{}",voterId,electionId);
         return voteRepository.findByUsersIdAndElectionId(voterId, electionId) != null;
 
     }
 
-    @Override
+    @Override //TO DO -> CHECK LOGIC IF RETURNED ARE EVERY ELECTION OR SINGLE ELECTION
     public Long countVotesForCandidate(Long candidateId) {
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION= COUNT_VOTES_FOR_CANDIDATE | BY USER_ID={}| FOR CANDIDATE_ID = {}",sessionId,candidateId);
+
         return voteRepository.countByCandidatesId(candidateId);
 
     }
 
     @Override
     public Long countVotesForElection(Long electionId) {
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION= COUNT_VOTES_FOR_ELECTION | BY USER_ID={}| FOR ELECTION_ID = {}",sessionId,electionId);
         return voteRepository.countByElectionId(electionId);
     }
 
     @Override
-    public List<Votes> returnAllVotesByElectionId(Long electionId) {
+    public List<VoteResponse> returnAllVotesByElectionId(Long electionId) {
+        Long sessionId = AuthContext.userId();
+
+        log.info("ACTION=GET_ALL_VOTES_FOR_ELECTION | BY USER_ID={}| FOR ELECTION_ID = {}",sessionId,electionId);
+
         if (voteRepository.findByElectionId(electionId) == null) {
             throw new ResourceNotFoundException("No votes found for the particular election id : " + electionId);
         }
-        return voteRepository.findByElectionId(electionId);
+        return voteRepository.findByElectionId(electionId)
+                .stream()
+                .map(VoteResponse::new)
+                .toList();
     }
 
     @Override
     public Votes getVoteByVoteId(Long voteId) {
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION=GET_VOTE_BY_VOTE_ID | BY USER_ID={}",sessionId);
 
         return voteRepository.findById(voteId).orElseThrow(() -> new ResourceNotFoundException("No votes available by the id :" + voteId));
     }
 
     @Override
     public Votes getElectionVotesByVoterId(Long electionId, Long voterId) {
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION=GET_VOTE_BY_VOTER_ID |IN ELECTION_ID={}| FOR VOTER_ID={}| BY USER_ID={}",electionId,voterId,sessionId);
         return voteRepository.findByUsersIdAndElectionId(voterId,electionId).orElseThrow(()->new ResourceNotFoundException("No votes available by the voterId :" + voterId));
     }
 
     @Override
     public Votes getByUserId(Long userId) {
-        Votes vote = voteRepository.findByUsersId(userId).orElseThrow(()->new UserNotFound("No votes found by id : "+userId ));
-        return vote;
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION= GET_VOTES_BY_USER_ID ={}|BY USER_ID={}",userId,sessionId);
+
+
+        return voteRepository.findByUsersId(userId).orElseThrow(()->new UserNotFound("No votes found by id : "+userId ));
     }
 
     @Override
@@ -154,8 +189,22 @@ log.debug("Validating election {}",electionId);
     }
 
 
+    @Override
+    public Long countForCandidateForElection(Long candidateId, Long electionId) {
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION=COUNT_FOR_CANDIDATE ={}|IN_ELECTION={} | BY_USER={} ",candidateId,electionId,sessionId);
+        if(voteRepository.countByCandidatesIdAndElectionId(candidateId,electionId)==null){
+            throw  new ResourceNotFoundException("No count found for  candidateId :"+candidateId+"election :"+electionId);
+        }
+        return  voteRepository.countByCandidatesIdAndElectionId (candidateId,electionId);
+
+    }
+
+
     @PostConstruct
     public void inbuiltVoteMemory(){
+
+
         List<Votes>findAll = voteRepository.findAll();
 
         for (Votes vote : findAll) {

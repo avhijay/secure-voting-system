@@ -3,6 +3,7 @@ package com.votingSystem.secureVote.service.implementation;
 import com.votingSystem.secureVote.dto.UserRequest;
 import com.votingSystem.secureVote.dto.UserResponse;
 import com.votingSystem.secureVote.entity.Users;
+import com.votingSystem.secureVote.exception.AccessLevelNotSufficient;
 import com.votingSystem.secureVote.exception.UserNotFound;
 import com.votingSystem.secureVote.repository.UserRepository;
 import com.votingSystem.secureVote.security.AuthContext;
@@ -39,36 +40,30 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<Users> getAllUsers() {
-        return userRepository.findAll();
+    public List<UserResponse> getAllUsers() {
+        Long sessionId = AuthContext.userId();
+        log.info("ACTION=GET_ALL_USERS | BY_USER={} ",sessionId);
+        return userRepository.findAll().stream()
+                .map(UserResponse::new)
+                .toList();
     }
 
-    @Override
-    public Users getUserById(Long id) {
-        return userRepository.findById(id).orElseThrow(() ->new RuntimeException("User not found with the id: "+ id));
-    }
 
-    @Override
-    public Users getUserByIdentityKey(String identityKey) {
-        return userRepository.findByIdentityKey(identityKey).orElseThrow(()->new UserNotFound("User Not found with identity key :"+identityKey));
-    }
-
-    @Override
-    public List<Users> getUserByRole(String role) {
-        return userRepository.findByRole(role);
-    }
-
-    @Override
-    public List<Users> getUserByStatus(String status) {
-        return userRepository.findByStatus(status);
-    }
 
     @Override
     public UserResponse createUser(UserRequest userRequest) {
 
         Long sessionUserId = AuthContext.userId();
-        log.info("User {} attempting to create a new user",sessionUserId);
+        Users postingUser = userRepository.findById(sessionUserId).orElseThrow(()-> new UserNotFound("No user found with id :"+sessionUserId));
+        log.debug("Validating clearance level {} for user {}",postingUser.getClearanceLevel(),postingUser.getId());
+        if (postingUser.getClearanceLevel()<2){
 
+            log.warn("USER={} attempted to create user with insufficient clearance level",sessionUserId);
+            throw new AccessLevelNotSufficient("user clearanceLevel not sufficient :"+sessionUserId);
+
+
+        }
+        log.info("ACTION=CREATE_USER | BY_USER={}| STATUS=START",sessionUserId);
         Users user = new Users();
         user.setEmail(userRequest.getEmailId());
         user.setIdentityKey(userRequest.getIdentityKey());
@@ -80,16 +75,57 @@ public class UserServiceImpl implements UserService {
         user.setStatus(userRequest.getStatus());
         user.setClearanceLevel(userRequest.getClearanceLevel());
         Users saved = userRepository.save(user);
+
+
         if (saved.getRole().equalsIgnoreCase("ADMIN")) {
             log.warn("User {} creating new user with ADMIN role", sessionUserId);
         }
-            log.debug("User {} successfully created a user with id {}", sessionUserId, saved.getId());
-            auditService.logAction(sessionUserId, "CREATE_USER", "SUCCESS", null);
+        log.info("ACTION=CREATE_USER | BY_USER={} | STATUS=SUCCESS | NEW_USER_ID={}",sessionUserId,saved.getId());
+        auditService.logAction(sessionUserId, "CREATE_USER", "SUCCESS", null);
 
 
-            return new UserResponse(saved);
+        return new UserResponse(saved);
 
     }
+
+
+
+
+
+
+
+
+
+
+    @Override
+    public Users getUserById(Long id) {
+        Long sessionId = AuthContext.userId();
+        return userRepository.findById(id).orElseThrow(() ->new RuntimeException("User not found with the id: "+ id));
+    }
+
+    @Override
+    public Users getUserByIdentityKey(String identityKey) {
+        Long sessionId = AuthContext.userId();
+        return userRepository.findByIdentityKey(identityKey).orElseThrow(()->new UserNotFound("User Not found with identity key :"+identityKey));
+    }
+
+    @Override
+    public List<UserResponse> getUserByRole(String role) {
+        Long sessionId = AuthContext.userId();
+        return userRepository.findByRole(role).stream().map(UserResponse::new).toList();
+    }
+
+    @Override
+    public List<UserResponse> getUserByStatus(String status) {
+        Long sessionId = AuthContext.userId();
+        return userRepository.findByStatus(status)
+                .stream()
+                .map(UserResponse::new)
+                .toList()
+
+                ;
+    }
+
 
 
     // MAKE IT CUSTOM
@@ -100,11 +136,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Users updateUsers(Long id, Users user) {
+        Long sessionId = AuthContext.userId();
         return user;
     }
 
     @Override
     public void delete(Long id) {
+        Long sessionId = AuthContext.userId();
         userRepository.deleteById(id);
 
     }

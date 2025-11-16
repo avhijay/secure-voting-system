@@ -20,7 +20,7 @@ public class CustomUserDetails implements  UserDetails{
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        String role = "Role_"+users.getRole().toUpperCase();// spring security roles start with ROLE_
+        String role = "ROLE_"+users.getRole().toUpperCase();// spring security roles start with ROLE_
         return List.of(new SimpleGrantedAuthority(role));
     }
 

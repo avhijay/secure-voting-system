@@ -17,8 +17,19 @@ private Long id;
 
     private String emailId;
 
-    public UserResponse(Users saved) {}
+
     public UserResponse(){}
+
+    public UserResponse(Users saved) {
+        this.id = saved.getId();
+        this.name = saved.getName();
+        this.role = saved.getRole();
+        this.status = saved.getStatus();
+        this.clearanceLevel = saved.getClearanceLevel();
+        this.emailId = saved.getEmail();
+
+
+    }
 
     public UserResponse(Long id, String name, String role, String status, Integer clearanceLevel, String emailId) {
         this.id = id;

@@ -1,9 +1,12 @@
 package com.votingSystem.secureVote.service;
 
+import com.votingSystem.secureVote.dto.vote.GetByElectionIdRequest;
+import com.votingSystem.secureVote.dto.vote.GetByUserIdRequest;
+import com.votingSystem.secureVote.dto.vote.GetByVoteIdRequest;
+import com.votingSystem.secureVote.dto.vote.VoteResponse;
 import com.votingSystem.secureVote.entity.Votes;
 
 import java.util.List;
-import java.util.Optional;
 
 public interface VoteService {
 
@@ -15,9 +18,9 @@ public interface VoteService {
 
     Long countVotesForElection(Long electionId);
 
-    List<Votes> returnAllVotesByElectionId(Long electionId);
+    List<VoteResponse> returnAllVotesByElectionId(Long electionId);
 
-    Votes  getVoteByVoteId(Long voteId);
+    Votes  getVoteByVoteId( Long voteId);
 
 
     Votes getElectionVotesByVoterId(Long electionId , Long voterId);
@@ -25,6 +28,8 @@ public interface VoteService {
     Votes getByUserId(Long userId);
 
     public Boolean hasTheUserVoted(Long electionId, Long userId);
+
+    Long countForCandidateForElection(Long candidateId , Long ElectionId);
 
 
 

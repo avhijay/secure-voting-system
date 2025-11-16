@@ -11,11 +11,11 @@ import java.util.Optional;
 public interface UserService {
 
 
-    List<Users> getAllUsers();
+    List<UserResponse> getAllUsers();
     Users getUserById(Long id);
   Users getUserByIdentityKey(String identityKey);
-    List<Users> getUserByRole(String role);
-    List<Users> getUserByStatus(String status);
+    List<UserResponse> getUserByRole(String role);
+    List<UserResponse> getUserByStatus(String status);
 
 
     UserResponse createUser(UserRequest userRequest);

@@ -1,7 +1,8 @@
 package com.votingSystem.secureVote.rest;
 
-import com.votingSystem.secureVote.dto.VoteRequest;
-import com.votingSystem.secureVote.dto.VoteResponse;
+import com.votingSystem.secureVote.dto.vote.GetByElectionIdRequest;
+import com.votingSystem.secureVote.dto.vote.VoteRequest;
+import com.votingSystem.secureVote.dto.vote.VoteResponse;
 import com.votingSystem.secureVote.entity.Votes;
 import com.votingSystem.secureVote.service.VoteService;
 import jakarta.validation.Valid;
@@ -35,17 +36,27 @@ public class VoteController {
 
         data.setVoterId(saved.getUsers().getId());
         data.setCandidateId(saved.getCandidates().getId());
-        data.setCastAt(Timestamp.valueOf(LocalDateTime.now()).toString());
+        data.setCastAt(Timestamp.valueOf(LocalDateTime.now()));
 
         URI  location = URI.create("/api/votes/cast"+data.getVoteId());
         return ResponseEntity.created(location).body(data);
     }
+
+
+
+
     @GetMapping("/election/{id}")
-    public ResponseEntity<List<Votes>> returnAllVotes(@PathVariable Long id){
-        List<Votes> votes = voteService.returnAllVotesByElectionId(id);
-        return ResponseEntity.ok(votes);
+    public ResponseEntity<List<VoteResponse>> returnAllVotes(@PathVariable Long id){
+
+        return ResponseEntity.ok(voteService.returnAllVotesByElectionId(id));
+
 
     }
+
+
+
+
+
 
     @GetMapping("/count/candidates/{id}")
     public ResponseEntity<Long> countByCandidate(@PathVariable Long id){
