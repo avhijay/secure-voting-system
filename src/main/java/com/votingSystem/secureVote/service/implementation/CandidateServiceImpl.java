@@ -11,6 +11,8 @@ import com.votingSystem.secureVote.service.AuditService;
 import com.votingSystem.secureVote.service.CandidateService;
 
 import jakarta.annotation.PostConstruct;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.nio.file.AccessDeniedException;
@@ -20,6 +22,8 @@ import java.util.List;
 @Service
 public class CandidateServiceImpl implements CandidateService {
 
+
+    private static final Logger log = LoggerFactory.getLogger(CandidateServiceImpl.class);
 
     private CandidateRepository candidateRepository;
     private AuditService auditService;
@@ -32,20 +36,24 @@ public class CandidateServiceImpl implements CandidateService {
 
     @Override
     public List<Candidates> getCandidatesByElection(Long electionId) {
-        Long LogsUserId = AuthContext.userId();
+      Long sessionId =   AuthContext.userId();
+        log.info("ACTION= GET_CANDIDATES_BY_ELECTION_ID ={} | BY USER_ID={}  | STATUS = START ", electionId , sessionId);
+
 
         int clearanceLevel = AuthContext.clearanceLevel();
 
+        log.debug("Validating userId= {} clearance",sessionId);
         if (clearanceLevel<3) {
             throw new AccessLevelNotSufficient("Access level not sufficient");
         }
 
         if(candidateRepository.findByElectionId(electionId)==null){
-            auditService.logAction(LogsUserId,"accessing candidates by election ","Rejected","No candidate found ");
+            auditService.logAction(sessionId,"accessing candidates by election ","Rejected","No candidate found ");
             throw new ResourceNotFoundException("No candidate found with election id : "+electionId);
 
         }
-auditService.logAction(LogsUserId,"accessing candidates by election ","Approved","none");
+auditService.logAction(sessionId,"accessing candidates by election ","Approved","none");
+        log.info("ACTION= GET_CANDIDATES_BY_ELECTION_ID ={} | BY USER_ID={}  | STATUS = SUCCESS ", electionId , sessionId);
         return candidateRepository.findByElectionId(electionId) ;
     }
 

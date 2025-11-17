@@ -4,6 +4,7 @@ package com.votingSystem.secureVote.rest;
 import com.votingSystem.secureVote.dto.UserRequest;
 import com.votingSystem.secureVote.dto.UserResponse;
 import com.votingSystem.secureVote.entity.Users;
+import com.votingSystem.secureVote.security.AuthContext;
 import com.votingSystem.secureVote.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -23,7 +24,11 @@ public class UserController {
     }
 
     @PostMapping("/create")
+
+
     public  ResponseEntity<UserResponse>createUser(@Valid @RequestBody UserRequest userRequest){
+
+
         UserResponse response = userService.createUser(userRequest);
 
 
